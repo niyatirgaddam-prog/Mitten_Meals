@@ -1,65 +1,590 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+
+const navItems = [
+  { label: 'Home', href: '#home' },
+  { label: 'Find Food', href: '#find-food' },
+  { label: 'Donate Food', href: '#donate-food' },
+  { label: 'Organizations', href: '#organizations' },
+  { label: 'Volunteers', href: '#volunteers' },
+  { label: 'Impact Dashboard', href: '#impact-dashboard' },
+  { label: 'About', href: '#about' },
+  { label: 'Resources', href: '#resources' },
+  { label: 'Contact', href: '#contact' },
+];
+
+const stats = [
+  { label: 'Meals Rescued', value: '1.2M+', detail: '+18% this quarter' },
+  { label: 'Pounds of Food Saved', value: '8.4M', detail: 'across 42 cities' },
+  { label: 'Businesses Partnered', value: '1,280', detail: 'and growing' },
+  { label: 'Food Banks Connected', value: '318', detail: '24/7 support' },
+  { label: 'Volunteers Active', value: '9,740', detail: 'ready to mobilize' },
+  { label: 'Families Helped', value: '67K', detail: 'every month' },
+  { label: 'CO₂ Emissions Prevented', value: '4.9K t', detail: 'equivalent' },
+  { label: 'Dollars Saved', value: '$14.3M', detail: 'in food value' },
+];
+
+const accountTypes = [
+  {
+    id: 'business',
+    title: 'Business',
+    blurb: 'Restaurants, grocery stores, schools, bakeries, farms, and hotels can donate surplus food in minutes.',
+    bullets: ['Fast pickup scheduling', 'Tax receipt history', 'Live impact reporting'],
+  },
+  {
+    id: 'organization',
+    title: 'Food Bank / Organization',
+    blurb: 'Shelters, pantries, churches, and community kitchens can accept, sort, and dispatch donations.',
+    bullets: ['Inventory updates', 'Urgent request routing', 'Volunteer coordination'],
+  },
+  {
+    id: 'volunteer',
+    title: 'Volunteer',
+    blurb: 'Drivers and community helpers can accept deliveries, optimize routes, and track their impact.',
+    bullets: ['One-tap delivery acceptance', 'Navigation support', 'Badges and leaderboards'],
+  },
+  {
+    id: 'family',
+    title: 'Individual / Family',
+    blurb: 'Neighbors can discover nearby pantry hours, meal programs, community fridges, and available groceries.',
+    bullets: ['Private, simple experience', 'Nearby resource map', 'Language and accessibility options'],
+  },
+];
+
+const donationFields = [
+  'Food title',
+  'Description',
+  'Food category',
+  'Quantity',
+  'Weight',
+  'Expiration date',
+  'Pickup deadline',
+  'Storage requirements',
+  'Temperature',
+  'Photo upload',
+  'Special notes',
+];
+
+const matchCards = [
+  {
+    title: 'Northside Pantry',
+    score: 96,
+    time: '14 min',
+    meals: '180',
+    carbon: '84 kg',
+    priority: 'High priority',
+  },
+  {
+    title: 'Harvest House Shelter',
+    score: 91,
+    time: '19 min',
+    meals: '154',
+    carbon: '71 kg',
+    priority: 'Balanced',
+  },
+  {
+    title: 'East End Community Kitchen',
+    score: 88,
+    time: '22 min',
+    meals: '132',
+    carbon: '66 kg',
+    priority: 'Recommended',
+  },
+];
+
+const mapFilters = ['Today', 'Tomorrow', 'This Week'];
+const resourceThemes = [
+  'Food waste statistics',
+  'Environmental impacts',
+  'Food safety',
+  'Tax incentives',
+];
+
+const stories = [
+  {
+    title: 'A bakery turned surplus into smiles',
+    quote:
+      'We used to throw away unsold pastries. Now our team can rescue them before sunrise and support families in the same neighborhood.',
+    author: 'Maya, owner of Golden Crust Bakery',
+  },
+  {
+    title: 'A volunteer route that changed a week',
+    quote:
+      'The app told me where the demand was highest and helped me deliver meals before the afternoon heat hit.',
+    author: 'Darnell, weekend volunteer',
+  },
+  {
+    title: 'A pantry that can plan with confidence',
+    quote:
+      'We used to scramble with last-minute donations. Now we see the forecast, match incoming food, and serve more families reliably.',
+    author: 'Rosa, operations lead at Riverstone Pantry',
+  },
+];
 
 export default function Home() {
+  const [activeRole, setActiveRole] = useState('business');
+  const [selectedFilter, setSelectedFilter] = useState('Today');
+
+  const selectedRole = accountTypes.find((role) => role.id === activeRole) ?? accountTypes[0];
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.14),_transparent_30%),linear-gradient(135deg,_#f8fff9_0%,_#f7fbff_100%)] text-slate-800">
+      <header className="sticky top-0 z-50 border-b border-emerald-100/80 bg-white/80 backdrop-blur-xl">
+        <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+          <a href="#home" className="flex items-center gap-3 text-lg font-semibold text-slate-900">
+            <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-600 text-lg font-bold text-white shadow-lg shadow-emerald-600/20">
+              H
+            </span>
+            HarvestLink
           </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+          <div className="hidden items-center gap-6 text-sm font-medium text-slate-700 lg:flex">
+            {navItems.map((item) => (
+              <a key={item.label} href={item.href} className="transition hover:text-emerald-700">
+                {item.label}
+              </a>
+            ))}
+          </div>
+          <div className="flex items-center gap-3">
+            <a href="#contact" className="hidden rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-emerald-300 hover:text-emerald-700 sm:inline-flex">
+              Login
+            </a>
+            <a href="#auth" className="inline-flex rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-emerald-600/20 transition hover:bg-emerald-700">
+              Sign Up
+            </a>
+          </div>
+        </nav>
+      </header>
+
+      <main id="home">
+        <section className="relative overflow-hidden px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+          <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
+            <div className="max-w-2xl">
+              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-sm font-semibold text-emerald-700">
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />AI-powered food rescue platform
+              </div>
+              <h1 className="mt-6 text-4xl font-semibold leading-tight text-slate-950 sm:text-5xl lg:text-6xl">
+                Rescue Food. Fight Hunger. Strengthen Communities.
+              </h1>
+              <p className="mt-6 text-lg leading-8 text-slate-700 sm:text-xl">
+                Connecting surplus food from businesses to food banks, shelters, volunteers, and families through intelligent technology.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-4">
+                <a href="#donate-food" className="inline-flex rounded-full bg-emerald-600 px-6 py-3 font-semibold text-white shadow-xl shadow-emerald-600/20 transition hover:-translate-y-0.5 hover:bg-emerald-700">
+                  Donate Food
+                </a>
+                <a href="#find-food" className="inline-flex rounded-full border border-slate-300 bg-white px-6 py-3 font-semibold text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-300 hover:text-emerald-700">
+                  Find Food
+                </a>
+                <a href="#volunteers" className="inline-flex rounded-full border border-orange-200 bg-orange-50 px-6 py-3 font-semibold text-orange-700 transition hover:-translate-y-0.5 hover:border-orange-300">
+                  Become a Volunteer
+                </a>
+              </div>
+              <div className="mt-8 flex flex-wrap gap-3 text-sm font-medium text-slate-700">
+                <span className="rounded-full bg-white/70 px-3 py-2 shadow-sm">Realtime matching</span>
+                <span className="rounded-full bg-white/70 px-3 py-2 shadow-sm">Trusted logistics</span>
+                <span className="rounded-full bg-white/70 px-3 py-2 shadow-sm">Accessible for all</span>
+              </div>
+            </div>
+
+            <div className="relative">
+              <div className="rounded-[2rem] border border-emerald-100 bg-white/80 p-3 shadow-[0_30px_80px_-20px_rgba(16,185,129,0.35)] backdrop-blur-xl">
+                <img
+                  src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80"
+                  alt="Volunteers distributing fresh food donations"
+                  className="h-[480px] w-full rounded-[1.5rem] object-cover"
+                />
+                <div className="absolute bottom-8 left-8 rounded-full bg-slate-950/80 px-4 py-2 text-sm font-medium text-white">
+                  Live rescue • 312 pickups today
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mx-auto mt-16 max-w-7xl">
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              {stats.map((item, index) => (
+                <div key={item.label} className="rounded-[1.4rem] border border-white/70 bg-white/80 p-5 shadow-sm backdrop-blur transition hover:-translate-y-1">
+                  <p className="text-sm font-medium text-slate-500">{item.label}</p>
+                  <p className="mt-2 text-3xl font-semibold text-slate-950">{item.value}</p>
+                  <p className="mt-2 text-sm text-emerald-700">{item.detail}</p>
+                  {index < 4 ? <div className="mt-4 h-1.5 rounded-full bg-gradient-to-r from-emerald-500 to-sky-400" /> : null}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="auth" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+          <div className="rounded-[2rem] border border-emerald-100 bg-white/85 p-8 shadow-[0_25px_70px_-30px_rgba(15,23,42,0.2)] backdrop-blur xl:p-10">
+            <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+              <div className="max-w-2xl">
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-700">User authentication</p>
+                <h2 className="mt-3 text-3xl font-semibold text-slate-950 sm:text-4xl">
+                  Choose the role that fits your mission.
+                </h2>
+                <p className="mt-4 text-lg leading-8 text-slate-700">
+                  HarvestLink is designed for businesses, organizations, volunteers, and families with secure, role-based access and Google sign-in support built in.
+                </p>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {accountTypes.map((role) => (
+                  <button
+                    key={role.id}
+                    type="button"
+                    onClick={() => setActiveRole(role.id)}
+                    className={`rounded-2xl border px-4 py-3 text-left transition ${activeRole === role.id ? 'border-emerald-500 bg-emerald-50 text-emerald-800 shadow-sm' : 'border-slate-200 bg-white text-slate-700 hover:border-emerald-300 hover:text-emerald-700'}`}
+                  >
+                    <p className="font-semibold">{role.title}</p>
+                    <p className="mt-1 text-sm">{role.blurb}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-8 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+              <div className="rounded-[1.6rem] border border-slate-200 bg-slate-50/70 p-6">
+                <p className="text-sm font-semibold text-emerald-700">Selected account</p>
+                <h3 className="mt-3 text-2xl font-semibold text-slate-950">{selectedRole.title}</h3>
+                <p className="mt-3 text-base leading-7 text-slate-700">{selectedRole.blurb}</p>
+                <ul className="mt-5 space-y-3">
+                  {selectedRole.bullets.map((bullet) => (
+                    <li key={bullet} className="flex items-center gap-3 text-sm text-slate-700">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">✓</span>
+                      {bullet}
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <a href="#contact" className="rounded-full bg-emerald-600 px-5 py-2.5 font-semibold text-white transition hover:bg-emerald-700">
+                    Create account
+                  </a>
+                  <a href="#resources" className="rounded-full border border-slate-200 bg-white px-5 py-2.5 font-semibold text-slate-700 transition hover:border-emerald-300 hover:text-emerald-700">
+                    Explore resources
+                  </a>
+                </div>
+              </div>
+
+              <div className="rounded-[1.6rem] bg-slate-950 p-6 text-white">
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-300">Secure experience</p>
+                <h3 className="mt-3 text-2xl font-semibold">Firebase-powered onboarding</h3>
+                <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-2xl border border-white/10 bg-white/10 p-4">
+                    <p className="text-sm text-slate-300">Email / password</p>
+                    <p className="mt-2 font-semibold">Fast registration</p>
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-white/10 p-4">
+                    <p className="text-sm text-slate-300">Google sign-in</p>
+                    <p className="mt-2 font-semibold">One-click access</p>
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-white/10 p-4 sm:col-span-2">
+                    <p className="text-sm text-slate-300">Role-based permissions</p>
+                    <p className="mt-2 font-semibold">Business, org, volunteer, and family dashboards tailored to each journey</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="donate-food" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+          <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
+            <div className="rounded-[2rem] border border-emerald-100 bg-white/85 p-8 shadow-sm backdrop-blur xl:p-10">
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-700">Donate food</p>
+              <h2 className="mt-3 text-3xl font-semibold text-slate-950 sm:text-4xl">Create a donation in minutes.</h2>
+              <p className="mt-4 text-lg leading-8 text-slate-700">
+                Businesses can enter their surplus food details, schedule pickup windows, and instantaneously receive a match recommendation.
+              </p>
+              <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                {donationFields.map((field) => (
+                  <div key={field} className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
+                    <p className="text-sm font-medium text-slate-600">{field}</p>
+                    <div className="mt-3 h-2 rounded-full bg-slate-200" />
+                  </div>
+                ))}
+              </div>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <a href="#contact" className="rounded-full bg-orange-500 px-5 py-2.5 font-semibold text-white transition hover:bg-orange-600">
+                  Submit donation
+                </a>
+                <a href="#impact-dashboard" className="rounded-full border border-slate-200 bg-white px-5 py-2.5 font-semibold text-slate-700 transition hover:border-emerald-300 hover:text-emerald-700">
+                  Review impact
+                </a>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <div className="rounded-[2rem] border border-emerald-100 bg-white/90 p-8 shadow-sm backdrop-blur">
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-700">AI matching score</p>
+                <h3 className="mt-3 text-2xl font-semibold text-slate-950">Trusted recommendations for every rescue.</h3>
+                <div className="mt-6 space-y-4">
+                  {matchCards.map((card) => (
+                    <div key={card.title} className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
+                      <div className="flex items-center justify-between gap-4">
+                        <div>
+                          <p className="font-semibold text-slate-900">{card.title}</p>
+                          <p className="text-sm text-slate-600">{card.priority}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-2xl font-semibold text-emerald-700">{card.score}%</p>
+                          <p className="text-sm text-slate-500">compatibility</p>
+                        </div>
+                      </div>
+                      <div className="mt-4 flex flex-wrap gap-3 text-sm text-slate-600">
+                        <span className="rounded-full bg-white px-3 py-1">{card.time} pickup</span>
+                        <span className="rounded-full bg-white px-3 py-1">{card.meals} meals</span>
+                        <span className="rounded-full bg-white px-3 py-1">{card.carbon} carbon saved</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-[2rem] border border-sky-100 bg-sky-50/80 p-8 shadow-sm">
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-700">Why this is recommended</p>
+                <ul className="mt-4 space-y-3 text-sm leading-7 text-slate-700">
+                  <li>• Distance and traffic conditions were weighted for ideal pickup timing.</li>
+                  <li>• Refrigeration capacity and storage compatibility were validated.</li>
+                  <li>• Urgency, food category, and volunteer availability were balanced in real time.</li>
+                  <li>• The selected organization can absorb the donation without spoilage risk.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="find-food" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+          <div className="rounded-[2rem] border border-emerald-100 bg-white/85 p-8 shadow-sm backdrop-blur xl:p-10">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+              <div className="max-w-2xl">
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-700">Interactive map</p>
+                <h2 className="mt-3 text-3xl font-semibold text-slate-950 sm:text-4xl">Find food resources near you in seconds.</h2>
+                <p className="mt-4 text-lg leading-8 text-slate-700">
+                  Explore pantries, shelters, community fridges, donation routes, and live pickups with filters for time, food type, and access needs.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {mapFilters.map((filter) => (
+                  <button
+                    key={filter}
+                    type="button"
+                    onClick={() => setSelectedFilter(filter)}
+                    className={`rounded-full px-4 py-2 text-sm font-semibold transition ${selectedFilter === filter ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700'}`}
+                  >
+                    {filter}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-8 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+              <div className="rounded-[1.8rem] border border-slate-200 bg-[linear-gradient(135deg,_#f4fff8_0%,_#f6fbff_100%)] p-6">
+                <div className="relative h-[420px] overflow-hidden rounded-[1.4rem] border border-emerald-100 bg-gradient-to-br from-emerald-100 via-white to-sky-100">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,_rgba(255,255,255,0.95),_transparent_18%),radial-gradient(circle_at_80%_30%,_rgba(255,255,255,0.75),_transparent_20%),radial-gradient(circle_at_60%_80%,_rgba(255,255,255,0.8),_transparent_20%)]" />
+                  <div className="absolute left-[12%] top-[20%] h-4 w-4 rounded-full bg-emerald-600 shadow-lg shadow-emerald-600/30" />
+                  <div className="absolute right-[18%] top-[30%] h-4 w-4 rounded-full bg-orange-500 shadow-lg shadow-orange-500/30" />
+                  <div className="absolute left-[22%] top-[65%] h-4 w-4 rounded-full bg-sky-600 shadow-lg shadow-sky-600/30" />
+                  <div className="absolute right-[25%] top-[70%] h-4 w-4 rounded-full bg-violet-500 shadow-lg shadow-violet-500/30" />
+                  <div className="absolute left-[45%] top-[45%] h-20 w-20 rounded-full border-2 border-dashed border-emerald-300" />
+                  <div className="absolute bottom-6 left-6 rounded-2xl bg-white/80 px-4 py-3 text-sm font-medium text-slate-700 shadow-sm backdrop-blur">
+                    {selectedFilter} view • 26 live opportunities
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                {[
+                  ['Businesses', 'Fresh produce and prepared meals', 'bg-emerald-600'],
+                  ['Food banks', 'Shelf-stable staples and freezer stock', 'bg-sky-600'],
+                  ['Community fridges', 'Open now for walk-up access', 'bg-orange-500'],
+                  ['Volunteers', 'Delivery routes and pickup windows', 'bg-violet-500'],
+                ].map(([label, detail, color]) => (
+                  <div key={label} className="rounded-[1.4rem] border border-slate-200 bg-slate-50/80 p-4">
+                    <div className="flex items-center gap-3">
+                      <span className={`h-3.5 w-3.5 rounded-full ${color}`} />
+                      <p className="font-semibold text-slate-900">{label}</p>
+                    </div>
+                    <p className="mt-2 text-sm leading-7 text-slate-600">{detail}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="organizations" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+          <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+            <div className="rounded-[2rem] border border-slate-200 bg-white/85 p-8 shadow-sm backdrop-blur xl:p-10">
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-700">Organizations</p>
+              <h2 className="mt-3 text-3xl font-semibold text-slate-950 sm:text-4xl">Built for food banks, shelters, and community kitchens.</h2>
+              <p className="mt-4 text-lg leading-8 text-slate-700">
+                Operations teams can accept donations, reject low-fit items, request volunteers, and update inventory in one calm, transparent workflow.
+              </p>
+              <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                {['Nearby donations', 'Pending matches', 'Accepted deliveries', 'Urgent requests'].map((item) => (
+                  <div key={item} className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4 text-sm font-medium text-slate-700">
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-[2rem] border border-slate-200 bg-slate-950 p-8 text-white shadow-sm xl:p-10">
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-300">Volunteer support</p>
+              <h2 className="mt-3 text-3xl font-semibold sm:text-4xl">One-tap delivery acceptance and route guidance.</h2>
+              <p className="mt-4 text-lg leading-8 text-slate-300">
+                Volunteers receive pickup requests, navigate routes, and close the loop with photos, notes, and delivery confirmation.
+              </p>
+              <div className="mt-8 rounded-[1.6rem] border border-white/10 bg-white/10 p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-slate-300">Hours volunteered</p>
+                    <p className="mt-2 text-3xl font-semibold">1,218</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-slate-300">Meals delivered</p>
+                    <p className="mt-2 text-3xl font-semibold">18,450</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="impact-dashboard" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+          <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+            <div className="rounded-[2rem] border border-emerald-100 bg-white/85 p-8 shadow-sm backdrop-blur xl:p-10">
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-700">Impact dashboard</p>
+              <h2 className="mt-3 text-3xl font-semibold text-slate-950 sm:text-4xl">Professional analytics you can trust.</h2>
+              <p className="mt-4 text-lg leading-8 text-slate-700">
+                Track meals rescued, food waste reduced, carbon emissions prevented, and volunteer hours with interactive charts built for leaders and donors.
+              </p>
+              <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                {[
+                  ['Meals rescued', '1.2M'],
+                  ['CO₂ prevented', '4.9K t'],
+                  ['Volunteer hours', '42K'],
+                  ['Communities served', '128'],
+                ].map(([label, value]) => (
+                  <div key={label} className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
+                    <p className="text-sm text-slate-500">{label}</p>
+                    <p className="mt-2 text-2xl font-semibold text-slate-950">{value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-[2rem] border border-slate-200 bg-white/85 p-8 shadow-sm backdrop-blur xl:p-10">
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-600">Top donating businesses</p>
+              <div className="mt-6 space-y-4">
+                {[
+                  ['Fresh Market', '92% donation efficiency'],
+                  ['Sunrise Cafe', '86% route compliance'],
+                  ['Northfield University', '81% community participation'],
+                  ['Riverstone Farms', '79% seasonal recovery'],
+                ].map(([name, detail]) => (
+                  <div key={name} className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <p className="font-semibold text-slate-900">{name}</p>
+                        <p className="text-sm text-slate-600">{detail}</p>
+                      </div>
+                      <span className="rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-700">+12%</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="about" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-2xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-700">Community stories</p>
+              <h2 className="mt-3 text-3xl font-semibold text-slate-950 sm:text-4xl">Real impact, from businesses and families to volunteers and nonprofits.</h2>
+            </div>
+          </div>
+          <div className="mt-8 grid gap-6 lg:grid-cols-3">
+            {stories.map((story) => (
+              <div key={story.title} className="rounded-[1.6rem] border border-slate-200 bg-white/85 p-6 shadow-sm backdrop-blur">
+                <img
+                  src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1000&q=80"
+                  alt="Community food rescue story"
+                  className="h-40 w-full rounded-[1.2rem] object-cover"
+                />
+                <h3 className="mt-5 text-xl font-semibold text-slate-950">{story.title}</h3>
+                <p className="mt-3 text-base leading-7 text-slate-700">“{story.quote}”</p>
+                <p className="mt-4 text-sm font-semibold text-emerald-700">{story.author}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section id="resources" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+          <div className="rounded-[2rem] border border-emerald-100 bg-white/85 p-8 shadow-sm backdrop-blur xl:p-10">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+              <div className="max-w-2xl">
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-700">Educational resources</p>
+                <h2 className="mt-3 text-3xl font-semibold text-slate-950 sm:text-4xl">Learn how technology helps rescue more food and feed more people.</h2>
+              </div>
+              <a href="#contact" className="rounded-full border border-slate-200 bg-white px-5 py-2.5 font-semibold text-slate-700 transition hover:border-emerald-300 hover:text-emerald-700">
+                Explore more
+              </a>
+            </div>
+            <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              {resourceThemes.map((theme) => (
+                <div key={theme} className="rounded-[1.3rem] border border-slate-200 bg-slate-50/70 p-5">
+                  <p className="font-semibold text-slate-900">{theme}</p>
+                  <p className="mt-2 text-sm leading-7 text-slate-600">Actionable guides, policy context, and practical tips for reducing food waste and supporting neighbors.</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="contact" className="mx-auto max-w-7xl px-4 pb-20 pt-10 sm:px-6 lg:px-8">
+          <div className="rounded-[2rem] bg-slate-950 p-8 text-white shadow-[0_25px_70px_-30px_rgba(15,23,42,0.7)] xl:p-10">
+            <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-300">Ready to get involved?</p>
+                <h2 className="mt-3 text-3xl font-semibold sm:text-4xl">Partner with HarvestLink to rescue food and strengthen your community.</h2>
+                <p className="mt-4 max-w-2xl text-lg leading-8 text-slate-300">
+                  From donation scheduling to volunteer coordination, the platform helps every stakeholder act with speed, dignity, and measurable impact.
+                </p>
+              </div>
+              <div className="rounded-[1.5rem] border border-white/10 bg-white/10 p-6">
+                <p className="text-sm text-slate-300">Contact</p>
+                <p className="mt-2 text-xl font-semibold">hello@harvestlink.org</p>
+                <p className="mt-2 text-sm text-slate-300">+1 (800) 555-0198</p>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <a href="#auth" className="rounded-full bg-emerald-600 px-5 py-2.5 font-semibold text-white transition hover:bg-emerald-700">
+                    Get started
+                  </a>
+                  <a href="#resources" className="rounded-full border border-white/20 px-5 py-2.5 font-semibold text-white transition hover:bg-white/10">
+                    View resources
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
+
+      <footer className="border-t border-slate-200 bg-white/70 px-4 py-10 text-sm text-slate-600 backdrop-blur sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <p className="font-semibold text-slate-900">HarvestLink</p>
+            <p className="mt-2 max-w-xl leading-7">Mission-driven technology for rescuing surplus food and redirecting it toward people and communities in need.</p>
+          </div>
+          <div className="flex flex-wrap gap-4">
+            <a href="#about" className="transition hover:text-emerald-700">About</a>
+            <a href="#resources" className="transition hover:text-emerald-700">Resources</a>
+            <a href="#contact" className="transition hover:text-emerald-700">Contact</a>
+            <a href="#auth" className="transition hover:text-emerald-700">Sign Up</a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
