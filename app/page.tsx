@@ -1,132 +1,58 @@
 'use client';
 
-import { useState } from 'react';
-
-const navItems = [
-  { label: 'Home', href: '#home' },
-  { label: 'Find Food', href: '#find-food' },
-  { label: 'Donate Food', href: '#donate-food' },
-  { label: 'Organizations', href: '#organizations' },
-  { label: 'Volunteers', href: '#volunteers' },
-  { label: 'Impact Dashboard', href: '#impact-dashboard' },
-  { label: 'About', href: '#about' },
-  { label: 'Resources', href: '#resources' },
-  { label: 'Contact', href: '#contact' },
-];
-
-const stats = [
-  { label: 'Meals Rescued', value: '1.2M+', detail: '+18% this quarter' },
-  { label: 'Pounds of Food Saved', value: '8.4M', detail: 'across 42 cities' },
-  { label: 'Businesses Partnered', value: '1,280', detail: 'and growing' },
-  { label: 'Food Banks Connected', value: '318', detail: '24/7 support' },
-  { label: 'Volunteers Active', value: '9,740', detail: 'ready to mobilize' },
-  { label: 'Families Helped', value: '67K', detail: 'every month' },
-  { label: 'CO₂ Emissions Prevented', value: '4.9K t', detail: 'equivalent' },
-  { label: 'Dollars Saved', value: '$14.3M', detail: 'in food value' },
-];
-
-const accountTypes = [
-  {
-    id: 'business',
-    title: 'Business',
-    blurb: 'Restaurants, grocery stores, schools, bakeries, farms, and hotels can donate surplus food in minutes.',
-    bullets: ['Fast pickup scheduling', 'Tax receipt history', 'Live impact reporting'],
-  },
-  {
-    id: 'organization',
-    title: 'Food Bank / Organization',
-    blurb: 'Shelters, pantries, churches, and community kitchens can accept, sort, and dispatch donations.',
-    bullets: ['Inventory updates', 'Urgent request routing', 'Volunteer coordination'],
-  },
-  {
-    id: 'volunteer',
-    title: 'Volunteer',
-    blurb: 'Drivers and community helpers can accept deliveries, optimize routes, and track their impact.',
-    bullets: ['One-tap delivery acceptance', 'Navigation support', 'Badges and leaderboards'],
-  },
-  {
-    id: 'family',
-    title: 'Individual / Family',
-    blurb: 'Neighbors can discover nearby pantry hours, meal programs, community fridges, and available groceries.',
-    bullets: ['Private, simple experience', 'Nearby resource map', 'Language and accessibility options'],
-  },
-];
-
-const donationFields = [
-  'Food title',
-  'Description',
-  'Food category',
-  'Quantity',
-  'Weight',
-  'Expiration date',
-  'Pickup deadline',
-  'Storage requirements',
-  'Temperature',
-  'Photo upload',
-  'Special notes',
-];
-
-const matchCards = [
-  {
-    title: 'Northside Pantry',
-    score: 96,
-    time: '14 min',
-    meals: '180',
-    carbon: '84 kg',
-    priority: 'High priority',
-  },
-  {
-    title: 'Harvest House Shelter',
-    score: 91,
-    time: '19 min',
-    meals: '154',
-    carbon: '71 kg',
-    priority: 'Balanced',
-  },
-  {
-    title: 'East End Community Kitchen',
-    score: 88,
-    time: '22 min',
-    meals: '132',
-    carbon: '66 kg',
-    priority: 'Recommended',
-  },
-];
-
-const mapFilters = ['Today', 'Tomorrow', 'This Week'];
-const resourceThemes = [
-  'Food waste statistics',
-  'Environmental impacts',
-  'Food safety',
-  'Tax incentives',
-];
-
-const stories = [
-  {
-    title: 'A bakery turned surplus into smiles',
-    quote:
-      'We used to throw away unsold pastries. Now our team can rescue them before sunrise and support families in the same neighborhood.',
-    author: 'Maya, owner of Golden Crust Bakery',
-  },
-  {
-    title: 'A volunteer route that changed a week',
-    quote:
-      'The app told me where the demand was highest and helped me deliver meals before the afternoon heat hit.',
-    author: 'Darnell, weekend volunteer',
-  },
-  {
-    title: 'A pantry that can plan with confidence',
-    quote:
-      'We used to scramble with last-minute donations. Now we see the forecast, match incoming food, and serve more families reliably.',
-    author: 'Rosa, operations lead at Riverstone Pantry',
-  },
-];
+import { useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { siteContent } from './data/siteContent';
+import { signInUser, signUpUser } from './lib/auth';
 
 export default function Home() {
+  const router = useRouter();
   const [activeRole, setActiveRole] = useState('business');
   const [selectedFilter, setSelectedFilter] = useState('Today');
+  const [mode, setMode] = useState<'signin' | 'signup'>('signup');
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    password: '',
+    organization: '',
+  });
+  const [submittedMessage, setSubmittedMessage] = useState('');
 
-  const selectedRole = accountTypes.find((role) => role.id === activeRole) ?? accountTypes[0];
+  const selectedRole = useMemo(() => {
+    return siteContent.accountTypes.find((role) => role.id === activeRole) ?? siteContent.accountTypes[0];
+  }, [activeRole]);
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (mode === 'signup') {
+      const result = signUpUser({
+        name: form.name,
+        email: form.email,
+        password: form.password,
+        role: activeRole as 'business' | 'organization' | 'family',
+        organization: form.organization,
+      });
+
+      if (!result.ok) {
+        setSubmittedMessage(result.message);
+        return;
+      }
+
+      setSubmittedMessage(`Welcome, ${result.user.name}! Your account is ready.`);
+      router.push('/dashboard');
+      return;
+    }
+
+    const result = signInUser(form.email, form.password);
+    if (!result.ok) {
+      setSubmittedMessage(result.message);
+      return;
+    }
+
+    setSubmittedMessage(`Welcome back, ${result.user.name}!`);
+    router.push('/dashboard');
+  };
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.14),_transparent_30%),linear-gradient(135deg,_#f8fff9_0%,_#f7fbff_100%)] text-slate-800">
@@ -139,7 +65,7 @@ export default function Home() {
             HarvestLink
           </a>
           <div className="hidden items-center gap-6 text-sm font-medium text-slate-700 lg:flex">
-            {navItems.map((item) => (
+            {siteContent.navItems.map((item) => (
               <a key={item.label} href={item.href} className="transition hover:text-emerald-700">
                 {item.label}
               </a>
@@ -176,8 +102,8 @@ export default function Home() {
                 <a href="#find-food" className="inline-flex rounded-full border border-slate-300 bg-white px-6 py-3 font-semibold text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-300 hover:text-emerald-700">
                   Find Food
                 </a>
-                <a href="#volunteers" className="inline-flex rounded-full border border-orange-200 bg-orange-50 px-6 py-3 font-semibold text-orange-700 transition hover:-translate-y-0.5 hover:border-orange-300">
-                  Become a Volunteer
+                <a href="#auth" className="inline-flex rounded-full border border-orange-200 bg-orange-50 px-6 py-3 font-semibold text-orange-700 transition hover:-translate-y-0.5 hover:border-orange-300">
+                  Create an account
                 </a>
               </div>
               <div className="mt-8 flex flex-wrap gap-3 text-sm font-medium text-slate-700">
@@ -203,7 +129,7 @@ export default function Home() {
 
           <div className="mx-auto mt-16 max-w-7xl">
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              {stats.map((item, index) => (
+              {siteContent.stats.map((item, index) => (
                 <div key={item.label} className="rounded-[1.4rem] border border-white/70 bg-white/80 p-5 shadow-sm backdrop-blur transition hover:-translate-y-1">
                   <p className="text-sm font-medium text-slate-500">{item.label}</p>
                   <p className="mt-2 text-3xl font-semibold text-slate-950">{item.value}</p>
@@ -224,11 +150,11 @@ export default function Home() {
                   Choose the role that fits your mission.
                 </h2>
                 <p className="mt-4 text-lg leading-8 text-slate-700">
-                  HarvestLink is designed for businesses, organizations, volunteers, and families with secure, role-based access and Google sign-in support built in.
+                  HarvestLink is designed for businesses, organizations, and families with simple, role-based access that can grow into a full account system later.
                 </p>
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
-                {accountTypes.map((role) => (
+                {siteContent.accountTypes.map((role) => (
                   <button
                     key={role.id}
                     type="button"
@@ -256,32 +182,86 @@ export default function Home() {
                   ))}
                 </ul>
                 <div className="mt-6 flex flex-wrap gap-3">
-                  <a href="#contact" className="rounded-full bg-emerald-600 px-5 py-2.5 font-semibold text-white transition hover:bg-emerald-700">
+                  <button
+                    type="button"
+                    onClick={() => setMode('signup')}
+                    className="rounded-full bg-emerald-600 px-5 py-2.5 font-semibold text-white transition hover:bg-emerald-700"
+                  >
                     Create account
-                  </a>
-                  <a href="#resources" className="rounded-full border border-slate-200 bg-white px-5 py-2.5 font-semibold text-slate-700 transition hover:border-emerald-300 hover:text-emerald-700">
-                    Explore resources
-                  </a>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMode('signin')}
+                    className="rounded-full border border-slate-200 bg-white px-5 py-2.5 font-semibold text-slate-700 transition hover:border-emerald-300 hover:text-emerald-700"
+                  >
+                    Sign in
+                  </button>
                 </div>
               </div>
 
               <div className="rounded-[1.6rem] bg-slate-950 p-6 text-white">
-                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-300">Secure experience</p>
-                <h3 className="mt-3 text-2xl font-semibold">Firebase-powered onboarding</h3>
-                <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-300">Simple onboarding</p>
+                <h3 className="mt-3 text-2xl font-semibold">Local account setup that is easy to upgrade later</h3>
+                <div className="mt-6 grid gap-3">
                   <div className="rounded-2xl border border-white/10 bg-white/10 p-4">
-                    <p className="text-sm text-slate-300">Email / password</p>
-                    <p className="mt-2 font-semibold">Fast registration</p>
+                    <p className="text-sm text-slate-300">Name and email</p>
+                    <p className="mt-2 font-semibold">Collect a real contact for future outreach</p>
                   </div>
                   <div className="rounded-2xl border border-white/10 bg-white/10 p-4">
-                    <p className="text-sm text-slate-300">Google sign-in</p>
-                    <p className="mt-2 font-semibold">One-click access</p>
+                    <p className="text-sm text-slate-300">Role-based profile</p>
+                    <p className="mt-2 font-semibold">Business, organization, or family dashboards tailored to each journey</p>
                   </div>
-                  <div className="rounded-2xl border border-white/10 bg-white/10 p-4 sm:col-span-2">
-                    <p className="text-sm text-slate-300">Role-based permissions</p>
-                    <p className="mt-2 font-semibold">Business, org, volunteer, and family dashboards tailored to each journey</p>
+                  <div className="rounded-2xl border border-white/10 bg-white/10 p-4">
+                    <p className="text-sm text-slate-300">Future-ready</p>
+                    <p className="mt-2 font-semibold">Swap this for a real auth provider whenever you are ready</p>
                   </div>
                 </div>
+                <form onSubmit={handleSubmit} className="mt-6 space-y-3">
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <input
+                      value={form.name}
+                      onChange={(event) => setForm({ ...form, name: event.target.value })}
+                      className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-400"
+                      placeholder="Your name"
+                      required={mode === 'signup'}
+                    />
+                    <input
+                      value={form.email}
+                      onChange={(event) => setForm({ ...form, email: event.target.value })}
+                      type="email"
+                      className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-400"
+                      placeholder="Email address"
+                      required
+                    />
+                  </div>
+                  <input
+                    value={form.password}
+                    onChange={(event) => setForm({ ...form, password: event.target.value })}
+                    type="password"
+                    className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-400"
+                    placeholder={mode === 'signup' ? 'Create a password' : 'Password'}
+                    required
+                  />
+                  <input
+                    value={form.organization}
+                    onChange={(event) => setForm({ ...form, organization: event.target.value })}
+                    className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-400"
+                    placeholder="Organization or neighborhood"
+                  />
+                  <div className="flex flex-wrap items-center gap-3">
+                    <button type="submit" className="rounded-full bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700">
+                      {mode === 'signup' ? 'Create account' : 'Sign in'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMode(mode === 'signup' ? 'signin' : 'signup')}
+                      className="text-sm font-medium text-emerald-300 transition hover:text-emerald-200"
+                    >
+                      {mode === 'signup' ? 'Already have an account?' : 'Need an account?'}
+                    </button>
+                  </div>
+                  {submittedMessage ? <p className="text-sm text-emerald-300">{submittedMessage}</p> : null}
+                </form>
               </div>
             </div>
           </div>
@@ -296,7 +276,7 @@ export default function Home() {
                 Businesses can enter their surplus food details, schedule pickup windows, and instantaneously receive a match recommendation.
               </p>
               <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                {donationFields.map((field) => (
+                {siteContent.donationFields.map((field) => (
                   <div key={field} className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
                     <p className="text-sm font-medium text-slate-600">{field}</p>
                     <div className="mt-3 h-2 rounded-full bg-slate-200" />
@@ -318,7 +298,7 @@ export default function Home() {
                 <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-700">AI matching score</p>
                 <h3 className="mt-3 text-2xl font-semibold text-slate-950">Trusted recommendations for every rescue.</h3>
                 <div className="mt-6 space-y-4">
-                  {matchCards.map((card) => (
+                  {siteContent.matchCards.map((card) => (
                     <div key={card.title} className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
                       <div className="flex items-center justify-between gap-4">
                         <div>
@@ -364,7 +344,7 @@ export default function Home() {
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
-                {mapFilters.map((filter) => (
+                {siteContent.mapFilters.map((filter) => (
                   <button
                     key={filter}
                     type="button"
@@ -397,7 +377,7 @@ export default function Home() {
                   ['Businesses', 'Fresh produce and prepared meals', 'bg-emerald-600'],
                   ['Food banks', 'Shelf-stable staples and freezer stock', 'bg-sky-600'],
                   ['Community fridges', 'Open now for walk-up access', 'bg-orange-500'],
-                  ['Volunteers', 'Delivery routes and pickup windows', 'bg-violet-500'],
+                  ['Families', 'Pickup windows and pantry access', 'bg-violet-500'],
                 ].map(([label, detail, color]) => (
                   <div key={label} className="rounded-[1.4rem] border border-slate-200 bg-slate-50/80 p-4">
                     <div className="flex items-center gap-3">
@@ -430,19 +410,19 @@ export default function Home() {
             </div>
 
             <div className="rounded-[2rem] border border-slate-200 bg-slate-950 p-8 text-white shadow-sm xl:p-10">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-300">Volunteer support</p>
-              <h2 className="mt-3 text-3xl font-semibold sm:text-4xl">One-tap delivery acceptance and route guidance.</h2>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-300">Organization workflow</p>
+              <h2 className="mt-3 text-3xl font-semibold sm:text-4xl">A calmer workflow for accepting and distributing donations.</h2>
               <p className="mt-4 text-lg leading-8 text-slate-300">
-                Volunteers receive pickup requests, navigate routes, and close the loop with photos, notes, and delivery confirmation.
+                Organizations can review incoming offers, confirm pickups, and track what has been distributed without adding unnecessary complexity.
               </p>
               <div className="mt-8 rounded-[1.6rem] border border-white/10 bg-white/10 p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-slate-300">Hours volunteered</p>
+                    <p className="text-sm text-slate-300">Open requests</p>
                     <p className="mt-2 text-3xl font-semibold">1,218</p>
                   </div>
                   <div>
-                    <p className="text-sm text-slate-300">Meals delivered</p>
+                    <p className="text-sm text-slate-300">Meals distributed</p>
                     <p className="mt-2 text-3xl font-semibold">18,450</p>
                   </div>
                 </div>
@@ -502,11 +482,11 @@ export default function Home() {
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-700">Community stories</p>
-              <h2 className="mt-3 text-3xl font-semibold text-slate-950 sm:text-4xl">Real impact, from businesses and families to volunteers and nonprofits.</h2>
+              <h2 className="mt-3 text-3xl font-semibold text-slate-950 sm:text-4xl">Real impact, from businesses and families to nonprofits and community partners.</h2>
             </div>
           </div>
           <div className="mt-8 grid gap-6 lg:grid-cols-3">
-            {stories.map((story) => (
+            {siteContent.stories.map((story) => (
               <div key={story.title} className="rounded-[1.6rem] border border-slate-200 bg-white/85 p-6 shadow-sm backdrop-blur">
                 <img
                   src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1000&q=80"
@@ -533,7 +513,7 @@ export default function Home() {
               </a>
             </div>
             <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              {resourceThemes.map((theme) => (
+              {siteContent.resourceThemes.map((theme) => (
                 <div key={theme} className="rounded-[1.3rem] border border-slate-200 bg-slate-50/70 p-5">
                   <p className="font-semibold text-slate-900">{theme}</p>
                   <p className="mt-2 text-sm leading-7 text-slate-600">Actionable guides, policy context, and practical tips for reducing food waste and supporting neighbors.</p>
