@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'HarvestLink | AI-powered food rescue platform',
+  title: 'Mitten Meals | Community food sharing platform',
   description:
-    'HarvestLink connects surplus food from businesses to food banks, shelters, volunteers, and families through intelligent technology.',
+    'Mitten Meals connects neighbors with surplus food and trusted local resources through a simple, community-first platform.',
 };
 
 export default function RootLayout({

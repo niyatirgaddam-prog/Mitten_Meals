@@ -1,11 +1,17 @@
 @import 'tailwindcss';
 
 :root {
-  --background: #f8fff9;
-  --foreground: #0f172a;
-  --brand-green: #16a34a;
-  --brand-orange: #f97316;
-  --brand-sky: #38bdf8;
+  --background: #f5f9fd;
+  --foreground: #14314f;
+  --brand-blue: #0a4d9b;
+  --brand-blue-deep: #0b2d5f;
+  --brand-blue-soft: #eaf7ff;
+  --brand-sky: #bfeaf8;
+  --brand-sky-strong: #57b7e6;
+  --brand-cream: #f7f3eb;
+  --brand-navy: #122742;
+  --brand-gold: #f6c660;
+  --brand-shadow: rgba(10, 77, 155, 0.14);
 }
 
 @theme inline {
@@ -21,13 +27,16 @@ html {
 
 body {
   margin: 0;
-  background: var(--background);
+  background:
+    radial-gradient(circle at top left, rgba(95, 181, 233, 0.16), transparent 26%),
+    radial-gradient(circle at top right, rgba(15, 93, 183, 0.12), transparent 27%),
+    linear-gradient(180deg, #f9fcff 0%, #f3f9ff 100%);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
 
 ::selection {
-  background: rgba(22, 163, 74, 0.22);
+  background: rgba(14, 97, 177, 0.18);
 }
 
 @keyframes floatSoft {
@@ -42,4 +51,10 @@ body {
 
 .float-soft {
   animation: floatSoft 5s ease-in-out infinite;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
 }
